@@ -1,0 +1,14 @@
+
+project_id = "dkte-placement-portal"
+
+[functions.verify-prn]
+verify_jwt = false
+
+[functions.register-student]
+verify_jwt = false
+
+[functions.student-login]
+verify_jwt = false
+
+[functions.submit-application]
+verify_jwt = false
