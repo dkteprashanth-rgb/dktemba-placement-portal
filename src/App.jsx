@@ -6,7 +6,9 @@ import {
   Route,
   Navigate,
   Link,
+  NavLink,
   useNavigate,
+  useLocation,
 } from 'react-router-dom';
 
 import {
@@ -63,8 +65,14 @@ function Nav() {
   const [open, setOpen] = useState(false);
 
   const nav = useNavigate();
+  const location = useLocation();
 
-  // Listen for authentication changes
+  // Close the drawer whenever the route changes.
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
+
+  // Listen for authentication changes.
   useEffect(() => {
     if (!supabase) return;
 
@@ -92,7 +100,7 @@ function Nav() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Identify whether the authenticated user is an administrator
+  // Identify whether the authenticated user is an administrator.
   useEffect(() => {
     let active = true;
 
@@ -114,19 +122,12 @@ function Nav() {
 
         if (error) throw error;
 
-        if (active) {
-          setIsAdmin(Boolean(data));
-        }
+        if (active) setIsAdmin(Boolean(data));
       } catch (error) {
         console.error('Admin role verification failed:', error);
-
-        if (active) {
-          setIsAdmin(false);
-        }
+        if (active) setIsAdmin(false);
       } finally {
-        if (active) {
-          setRoleLoading(false);
-        }
+        if (active) setRoleLoading(false);
       }
     }
 
@@ -137,7 +138,6 @@ function Nav() {
     };
   }, [session]);
 
-  // Logout
   async function logout() {
     if (supabase) {
       const { error } = await supabase.auth.signOut();
@@ -150,52 +150,30 @@ function Nav() {
 
     setSession(null);
     setIsAdmin(false);
+    setOpen(false);
     nav('/');
   }
 
+  const closeMenu = () => setOpen(false);
+
   return (
     <header className="topbar">
-
-      {/* Brand */}
-      <Link className="brand" to="/">
+      <Link className="brand" to="/" onClick={closeMenu}>
         <span className="brand-mark">
           <GraduationCap size={23} />
         </span>
-
         <span>
           <b>DKTE</b>
           <small>PLACEMENT PORTAL</small>
         </span>
       </Link>
 
-      {/* Mobile menu */}
-      <button
-        className="mobile-menu"
-        onClick={() => setOpen(!open)}
-        aria-label="Toggle menu"
-      >
-        {open ? <X /> : <Menu />}
-      </button>
-
-      {/* Navigation links */}
-      <nav className={open ? 'nav-links show' : 'nav-links'}>
-
-        <Link to="/" onClick={() => setOpen(false)}>
-          Home
-        </Link>
-
-        <Link to="/about" onClick={() => setOpen(false)}>
-          About
-        </Link>
-
-        <Link to="/openings" onClick={() => setOpen(false)}>
-          Current Openings
-        </Link>
-
-        <Link to="/help" onClick={() => setOpen(false)}>
-          Help
-        </Link>
-
+      {/* Desktop navigation */}
+      <nav className="nav-links desktop-nav" aria-label="Main navigation">
+        <NavLink to="/">Home</NavLink>
+        <NavLink to="/about">About</NavLink>
+        <NavLink to="/openings">Current Openings</NavLink>
+        <NavLink to="/help">Help</NavLink>
         <a
           href="https://updateresume.vercel.app/"
           target="_blank"
@@ -209,7 +187,6 @@ function Nav() {
             <Link
               className="nav-cta"
               to={roleLoading ? '#' : isAdmin ? '/admin' : '/student'}
-              onClick={() => setOpen(false)}
             >
               {roleLoading
                 ? 'Loading...'
@@ -217,7 +194,6 @@ function Nav() {
                   ? 'Admin Dashboard'
                   : 'My Dashboard'}
             </Link>
-
             <button className="nav-logout" onClick={logout}>
               <LogOut size={15} />
               Logout
@@ -225,24 +201,136 @@ function Nav() {
           </>
         ) : (
           <>
-            <Link to="/login" onClick={() => setOpen(false)}>
-              Student Login
-            </Link>
-
-            <Link to="/admin/login" onClick={() => setOpen(false)}>
-              Admin Login
-            </Link>
-
-            <Link
-              className="nav-cta"
-              to="/register"
-              onClick={() => setOpen(false)}
-            >
+            <NavLink to="/login">Student Login</NavLink>
+            <NavLink to="/admin/login">Admin Login</NavLink>
+            <Link className="nav-cta" to="/register">
               Create Account
             </Link>
           </>
         )}
+      </nav>
 
+      {/* Mobile menu trigger */}
+      <button
+        className={`mobile-menu ${open ? 'is-open' : ''}`}
+        onClick={() => setOpen((value) => !value)}
+        aria-label={open ? 'Close navigation menu' : 'Open navigation menu'}
+        aria-expanded={open}
+        aria-controls="mobile-navigation-drawer"
+        type="button"
+      >
+        <span className="menu-icon">
+          <Menu size={22} />
+        </span>
+        <span className="close-icon">
+          <X size={22} />
+        </span>
+      </button>
+
+      {/* Mobile drawer and backdrop */}
+      <div
+        className={`mobile-drawer-backdrop ${open ? 'is-visible' : ''}`}
+        onClick={closeMenu}
+        aria-hidden={!open}
+      />
+
+      <nav
+        id="mobile-navigation-drawer"
+        className={`mobile-drawer ${open ? 'is-open' : ''}`}
+        aria-label="Mobile navigation"
+        aria-hidden={!open}
+      >
+        <div className="drawer-heading">
+          <div>
+            <span className="drawer-eyebrow">DKTE MANAGEMENT STUDIES</span>
+            <h2>Explore portal</h2>
+            <p>Navigate your placement journey.</p>
+          </div>
+          <button
+            className="drawer-close"
+            type="button"
+            onClick={closeMenu}
+            aria-label="Close menu"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="drawer-section-label">MAIN MENU</div>
+
+        <NavLink to="/" end className="drawer-link" onClick={closeMenu}>
+          <span className="drawer-link-icon"><LayoutDashboard size={19} /></span>
+          <span>Home</span>
+          <ArrowUpRight className="drawer-link-arrow" size={16} />
+        </NavLink>
+        <NavLink to="/about" className="drawer-link" onClick={closeMenu}>
+          <span className="drawer-link-icon"><ShieldCheck size={19} /></span>
+          <span>About</span>
+          <ArrowUpRight className="drawer-link-arrow" size={16} />
+        </NavLink>
+        <NavLink to="/openings" className="drawer-link" onClick={closeMenu}>
+          <span className="drawer-link-icon"><BriefcaseBusiness size={19} /></span>
+          <span>Current Openings</span>
+          <ArrowUpRight className="drawer-link-arrow" size={16} />
+        </NavLink>
+        <NavLink to="/help" className="drawer-link" onClick={closeMenu}>
+          <span className="drawer-link-icon"><Users size={19} /></span>
+          <span>Help & Support</span>
+          <ArrowUpRight className="drawer-link-arrow" size={16} />
+        </NavLink>
+
+        <a
+          className="drawer-link"
+          href="https://updateresume.vercel.app/"
+          target="_blank"
+          rel="noreferrer"
+          onClick={closeMenu}
+        >
+          <span className="drawer-link-icon"><FileSpreadsheet size={19} /></span>
+          <span>Resume Portal</span>
+          <ArrowUpRight className="drawer-link-arrow" size={16} />
+        </a>
+
+        <div className="drawer-divider" />
+
+        {session ? (
+          <>
+            <Link
+              className="drawer-primary-action"
+              to={roleLoading ? '#' : isAdmin ? '/admin' : '/student'}
+              onClick={closeMenu}
+            >
+              <LayoutDashboard size={18} />
+              <span>
+                {roleLoading ? 'Loading dashboard...' : isAdmin ? 'Admin Dashboard' : 'My Dashboard'}
+              </span>
+              <ArrowUpRight size={17} />
+            </Link>
+            <button className="drawer-secondary-action" onClick={logout} type="button">
+              <LogOut size={17} />
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <Link className="drawer-primary-action" to="/login" onClick={closeMenu}>
+              <span>Student Login</span>
+              <ArrowUpRight size={17} />
+            </Link>
+            <Link className="drawer-secondary-action" to="/admin/login" onClick={closeMenu}>
+              <ShieldCheck size={17} />
+              Admin Login
+            </Link>
+            <Link className="drawer-create-account" to="/register" onClick={closeMenu}>
+              Create Student Account
+            </Link>
+          </>
+        )}
+
+        <div className="drawer-footer">
+          <span>DKTE · Department of Management Studies</span>
+          <span>Placement Cell Portal</span>
+        </div>
       </nav>
     </header>
   );
@@ -364,6 +452,23 @@ function Protected({ children, admin = false }) {
 // =====================================================
 
 function AdminShell({ children }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setMenuOpen(false);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [menuOpen]);
 
   const navItems = [
     ['/admin', 'Overview', LayoutDashboard],
@@ -375,44 +480,65 @@ function AdminShell({ children }) {
 
   return (
     <div className="admin-layout">
-
-      {/* Sidebar */}
-      <aside className="admin-sidebar">
-
+      {/* Mobile admin toolbar */}
+      <div className="admin-mobile-toolbar">
         <Link className="brand light" to="/">
-          <span className="brand-mark">
-            <GraduationCap />
+          <span className="brand-mark"><GraduationCap size={21} /></span>
+          <span>
+            <b>DKTE</b>
+            <small>ADMIN CONSOLE</small>
           </span>
+        </Link>
+        <button
+          type="button"
+          className={`admin-mobile-menu-button ${menuOpen ? 'is-open' : ''}`}
+          onClick={() => setMenuOpen((value) => !value)}
+          aria-label={menuOpen ? 'Close admin navigation' : 'Open admin navigation'}
+          aria-expanded={menuOpen}
+        >
+          {menuOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
+      </div>
 
+      <div
+        className={`admin-drawer-backdrop ${menuOpen ? 'is-visible' : ''}`}
+        onClick={() => setMenuOpen(false)}
+        aria-hidden={!menuOpen}
+      />
+
+      {/* Admin sidebar / mobile drawer */}
+      <aside className={`admin-sidebar ${menuOpen ? 'is-open' : ''}`}>
+        <Link className="brand light admin-sidebar-brand" to="/" onClick={() => setMenuOpen(false)}>
+          <span className="brand-mark"><GraduationCap /></span>
           <span>
             <b>DKTE</b>
             <small>ADMIN CONSOLE</small>
           </span>
         </Link>
 
-        <div className="side-label">
-          WORKSPACE
-        </div>
+        <div className="side-label">WORKSPACE</div>
 
         {navItems.map(([to, label, Icon]) => (
-          <Link key={to} to={to}>
+          <NavLink
+            key={to}
+            to={to}
+            end={to === '/admin'}
+            onClick={() => setMenuOpen(false)}
+          >
             <Icon size={17} />
-            {label}
-          </Link>
+            <span>{label}</span>
+          </NavLink>
         ))}
 
-        <Link to="/">
+        <Link to="/" onClick={() => setMenuOpen(false)}>
           <ArrowUpRight size={17} />
-          View student portal
+          <span>View student portal</span>
         </Link>
-
       </aside>
 
-      {/* Main content */}
       <main className="admin-main">
         {children}
       </main>
-
     </div>
   );
 }
