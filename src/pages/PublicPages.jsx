@@ -114,7 +114,7 @@ return <>
 
 export function About() {
 return <main className="content-page">
-<PageHead eyebrow="ABOUT THE PORTAL" title="A simpler placement journey." desc="The DKTE Placement Portal brings student registration, job opportunities and application tracking into one organised platform."/>
+<PageHead eyebrow="ABOUT THE PORTAL" title="A simpler placement journey." desc="The DKTE MBA Placement Portal brings student registration, job opportunities and application tracking into one organised platform."/>
 <div className="about-grid">
 <div className="about-panel">
 <span className="eyebrow">THE PURPOSE</span>
