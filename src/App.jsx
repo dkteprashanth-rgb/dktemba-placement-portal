@@ -163,7 +163,7 @@ function Nav() {
           <GraduationCap size={23} />
         </span>
         <span>
-          <b>DKTE</b>
+          <b>DKTE MBA</b>
           <small>PLACEMENT PORTAL</small>
         </span>
       </Link>
