@@ -543,3 +543,324 @@ body {
   width: 100%;
   flex: 0 0 auto;
 }
+
+
+
+/* =========================================================
+   DKTE PLACEMENT PORTAL — ANIMATIONS & HOVER EFFECTS
+   Appended to the supplied stylesheet.
+   Adds motion only; existing colours and layout are retained.
+   ========================================================= */
+
+/* Smooth interaction feedback */
+:where(a, button, input, select, textarea, .btn,
+       .job-card, .help-card, .stat-card, .dashboard-links a,
+       .admin-panel, .icon-link, .floating-card,
+       .admin-sidebar > a, .nav-links a, .drawer-link) {
+  transition:
+    transform .22s cubic-bezier(.2,.75,.25,1),
+    box-shadow .22s ease,
+    border-color .22s ease,
+    background-color .22s ease,
+    color .22s ease,
+    opacity .22s ease;
+}
+
+/* Page entrance */
+@keyframes dkte-page-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.content-page, .auth-single, .auth-page {
+  animation: dkte-page-enter .48s cubic-bezier(.2,.75,.25,1) both;
+}
+
+/* Hero entrance */
+@keyframes dkte-hero-enter {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-copy { animation: dkte-hero-enter .7s cubic-bezier(.2,.75,.25,1) both; }
+.hero-visual { animation: dkte-hero-enter .8s .12s cubic-bezier(.2,.75,.25,1) both; }
+
+/* Hero orbit breathing effect */
+@keyframes dkte-orbit-breathe {
+  0%, 100% { transform: scale(1); opacity: .28; }
+  50% { transform: scale(1.035); opacity: .42; }
+}
+.orbit-one { animation: dkte-orbit-breathe 7s ease-in-out infinite; }
+.orbit-two { animation: dkte-orbit-breathe 7s 1.2s ease-in-out infinite; }
+
+/* Floating information cards */
+@keyframes dkte-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+.floating-card { animation: dkte-float 5s ease-in-out infinite; }
+.float-b { animation-delay: 1.1s; }
+
+/* Buttons: hover lift and press feedback */
+.btn, .nav-cta, .drawer-primary-action, .drawer-secondary-action,
+.admin-mobile-menu-button {
+  transition: transform .2s cubic-bezier(.2,.75,.25,1),
+              box-shadow .2s ease, filter .2s ease,
+              background-color .2s ease, color .2s ease;
+}
+.btn:hover:not(:disabled), .nav-cta:hover,
+.drawer-primary-action:hover, .drawer-secondary-action:hover {
+  transform: translateY(-2px);
+}
+.btn:active:not(:disabled), .nav-cta:active,
+.drawer-primary-action:active, .drawer-secondary-action:active {
+  transform: translateY(0) scale(.985);
+}
+
+/* Hover-only card and navigation effects (desktop/mouse) */
+@media (hover: hover) and (pointer: fine) {
+  .job-card:hover, .help-card:hover, .stat-card:hover,
+  .dashboard-links a:hover, .admin-panel:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(16,39,68,.10);
+  }
+  .floating-card:hover { transform: translateY(-4px) scale(1.02); }
+  .feature-grid > div:hover { transform: translateY(-3px); }
+  .admin-sidebar > a:not(.brand):hover { transform: translateX(3px); }
+  .nav-links a:not(.nav-cta):hover { transform: translateY(-1px); }
+  .icon-link:hover { transform: translateX(3px); }
+}
+
+/* Icon and arrow micro-interactions */
+.text-link svg, .icon-link svg,
+.dashboard-links a > svg:last-child, .drawer-link-arrow {
+  transition: transform .22s ease;
+}
+.text-link:hover svg, .icon-link:hover svg { transform: translateX(3px); }
+.dashboard-links a:hover > svg:last-child,
+.drawer-link:hover .drawer-link-arrow { transform: translate(3px,-2px); }
+
+/* Form focus transitions */
+.auth-card input, .auth-card select, .auth-card textarea,
+.admin-form input, .admin-form select, .admin-form textarea,
+.filters select, .search-field {
+  transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease;
+}
+.auth-card input:focus, .auth-card select:focus, .auth-card textarea:focus,
+.admin-form input:focus, .admin-form select:focus, .admin-form textarea:focus,
+.filters select:focus, .search-field:focus-within {
+  transform: translateY(-1px);
+}
+
+/* Staggered entrance for repeated content */
+@keyframes dkte-stagger-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.job-list > *, .help-grid > *, .feature-grid > *,
+.stats-grid > *, .dashboard-links > * {
+  animation: dkte-stagger-in .48s cubic-bezier(.2,.75,.25,1) both;
+}
+.job-list > *:nth-child(2), .help-grid > *:nth-child(2),
+.feature-grid > *:nth-child(2), .stats-grid > *:nth-child(2),
+.dashboard-links > *:nth-child(2) { animation-delay: .07s; }
+.job-list > *:nth-child(3), .help-grid > *:nth-child(3),
+.feature-grid > *:nth-child(3), .stats-grid > *:nth-child(3) { animation-delay: .14s; }
+.job-list > *:nth-child(4), .help-grid > *:nth-child(4),
+.feature-grid > *:nth-child(4), .stats-grid > *:nth-child(4) { animation-delay: .21s; }
+
+/* Table hover feedback */
+tbody tr { transition: background-color .18s ease; }
+
+/* Respect reduced-motion accessibility preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+
+/* =========================================================
+   MENU HOVER BOX EFFECTS
+   Applies to public navigation, admin sidebar and mobile drawer.
+   ========================================================= */
+
+/* Public desktop navigation: soft rounded hover box */
+.nav-links a:not(.nav-cta):not(.nav-logout) {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 13px;
+  margin: -10px -5px;
+  border-radius: 9px;
+  transition:
+    color .2s ease,
+    background-color .2s ease,
+    box-shadow .2s ease,
+    transform .2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-links a:not(.nav-cta):not(.nav-logout):hover {
+    background: #edf3fb;
+    color: #1d477f;
+    box-shadow: inset 0 0 0 1px #dce7f5;
+    transform: translateY(-1px);
+  }
+}
+
+/* Keep the primary navigation action visually distinct */
+.nav-links .nav-cta {
+  transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+.nav-links .nav-cta:hover {
+  box-shadow: 0 7px 18px rgba(29,62,112,.2);
+}
+
+/* Admin sidebar: boxed selection and hover state */
+.admin-sidebar > a:not(.brand) {
+  position: relative;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  transition:
+    background-color .2s ease,
+    border-color .2s ease,
+    color .2s ease,
+    box-shadow .2s ease,
+    transform .2s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .admin-sidebar > a:not(.brand):hover {
+    background: #233d61;
+    border-color: #385779;
+    color: #fff;
+    box-shadow: 0 5px 14px rgba(3,14,29,.13);
+    transform: translateX(3px);
+  }
+}
+.admin-sidebar > a.active {
+  background: #29466e;
+  border-color: #3a5a82;
+  color: #fff;
+  box-shadow: inset 3px 0 #a9c8f3, 0 5px 14px rgba(3,14,29,.12);
+}
+
+/* Mobile drawer: visible boxed hover/active treatment */
+.drawer-link {
+  border: 1px solid transparent;
+  border-radius: 12px;
+  transition:
+    background-color .2s ease,
+    border-color .2s ease,
+    color .2s ease,
+    box-shadow .2s ease,
+    transform .2s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .drawer-link:hover {
+    background: #f0f5fc;
+    border-color: #dce7f5;
+    color: #1d477f;
+    box-shadow: 0 4px 12px rgba(22,55,96,.07);
+    transform: translateX(3px);
+  }
+}
+.drawer-link.active {
+  background: #eaf1fb;
+  border-color: #d5e2f3;
+  color: #1d477f;
+  box-shadow: inset 3px 0 #31588c;
+}
+
+/* Keyboard users get the same clear menu feedback */
+.nav-links a:focus-visible,
+.admin-sidebar > a:focus-visible,
+.drawer-link:focus-visible {
+  outline: 3px solid #8fb5e7;
+  outline-offset: 3px;
+}
+
+
+
+/* =========================================================
+   ROUTE LINK UNDERLINE EFFECT
+   Underline appears on hover for ordinary website links.
+   Active route keeps a persistent underline.
+   ========================================================= */
+
+/* Public desktop navigation links */
+.nav-links a:not(.nav-cta):not(.nav-logout) {
+  position: relative;
+  text-decoration: none;
+}
+.nav-links a:not(.nav-cta):not(.nav-logout)::after {
+  content: "";
+  position: absolute;
+  left: 13px;
+  right: 13px;
+  bottom: 5px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform .24s cubic-bezier(.2,.75,.25,1);
+}
+.nav-links a:not(.nav-cta):not(.nav-logout):hover::after,
+.nav-links a:not(.nav-cta):not(.nav-logout).active::after,
+.nav-links a:not(.nav-cta):not(.nav-logout)[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+
+/* Underline for inline route links throughout public pages */
+.content-page a:not(.btn):not(.icon-link),
+.section a:not(.btn):not(.icon-link),
+.footer a:not(.btn) {
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: left 100%;
+  background-size: 0 1px;
+  transition: background-size .22s ease, color .2s ease;
+}
+.content-page a:not(.btn):not(.icon-link):hover,
+.section a:not(.btn):not(.icon-link):hover,
+.footer a:not(.btn):hover {
+  background-size: 100% 1px;
+}
+
+/* Dashboard route tiles: underline the title on hover */
+.dashboard-links a b {
+  text-decoration: none;
+  text-decoration-color: currentColor;
+  text-underline-offset: 4px;
+  transition: text-decoration-color .2s ease;
+}
+.dashboard-links a:hover b {
+  text-decoration: underline;
+}
+
+/* Mobile drawer route links */
+.drawer-link {
+  text-decoration: none;
+}
+.drawer-link > span:not(.drawer-link-icon) {
+  text-decoration: none;
+  text-decoration-color: currentColor;
+  text-underline-offset: 4px;
+  transition: text-decoration-color .2s ease;
+}
+.drawer-link:hover > span:not(.drawer-link-icon),
+.drawer-link.active > span:not(.drawer-link-icon) {
+  text-decoration: underline;
+}
+
+/* Keep button-like links free from decorative underlines */
+a.btn, a.nav-cta, a.icon-link,
+.drawer-primary-action, .drawer-secondary-action {
+  text-decoration: none !important;
+  background-image: none !important;
+}
